@@ -1,0 +1,116 @@
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.event.MouseMotionAdapter;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.io.IOException;
+import java.awt.image.BufferedImage;
+import java.awt.event.MouseEvent;
+
+
+public class JordanRPG extends JPanel implements ActionListener {
+    private int[][] tileMap;
+    private Timer timer;
+    private BufferedImage dirtImage, waterImage, waterImage2, grassImage;
+    private boolean useWater1 = true;
+    private long lastToggleTime = 0;
+    int mouseX = 0;
+    int mouseY = 0;
+
+
+    public JordanRPG() {
+        tileMap = new int[10][10];
+        for (int i = 0; i < tileMap.length; i++) {
+            for (int j = 0; j < tileMap[0].length; j++) {
+                tileMap[i][j] = (int) (Math.random() * 3);
+            }
+        }
+
+        try {
+            dirtImage = ImageIO.read(getClass().getResource("res/dirt.jpg"));
+            waterImage = ImageIO.read(getClass().getResource("res/water1.png"));
+            waterImage2 = ImageIO.read(getClass().getResource("res/water2.png"));
+            grassImage = ImageIO.read(getClass().getResource("res/grass.jpg"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        timer = new Timer(16, this);
+        timer.start();
+
+        addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyChar() == 'q') {
+                    System.exit(0);
+                }
+            }
+        });
+
+        addMouseMotionListener(new MouseMotionAdapter() {
+            public void mouseMoved(java.awt.event.MouseEvent e) {
+                mouseX = e.getX();
+                mouseY = e.getY();
+                repaint(); // trigger paintComponent to be called again
+            }
+        });
+
+
+        setFocusable(true);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastToggleTime >= 500) {
+            useWater1 = !useWater1;
+            lastToggleTime = currentTime;
+        }
+        repaint();
+    }
+
+    @Override
+protected void paintComponent(Graphics g) {
+    super.paintComponent(g);
+    Graphics2D g2d = (Graphics2D) g;
+    drawMap(g2d);  
+    MyGraphics.drawSelectionBox(g2d, mouseX, mouseY, this, 100, 100); 
+}
+
+    public void drawMap(Graphics2D g2d) {
+    int tileWidth = getWidth() / tileMap.length;
+    int tileHeight = getHeight() / tileMap[0].length;
+
+    for (int x_Index = 0; x_Index < tileMap.length; x_Index++) {
+        for (int y_Index = 0; y_Index < tileMap[0].length; y_Index++) {
+            int tileValue = tileMap[x_Index][y_Index];
+            int x = tileWidth * x_Index;
+            int y = tileHeight * y_Index;
+
+            switch (tileValue) {
+                case 0:
+                    g2d.drawImage(grassImage, x, y, tileWidth, tileHeight, null);
+                    break;
+                case 1:
+                    g2d.drawImage(useWater1 ? waterImage : waterImage2, x, y, tileWidth, tileHeight, null);
+                    break;
+                case 2:
+                    g2d.drawImage(dirtImage, x, y, tileWidth, tileHeight, null);
+                    break;
+            }
+        }
+    }
+}
+
+
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("Jordan RPG");
+        JordanRPG jordanRPG = new JordanRPG();
+        frame.add(jordanRPG);
+        frame.setSize(1920, 1080);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
+    }
+}
