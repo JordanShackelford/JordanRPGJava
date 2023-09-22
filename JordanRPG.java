@@ -22,13 +22,7 @@ public class JordanRPG extends JPanel implements ActionListener {
 
 
     public JordanRPG() {
-        tileMap = new int[10][10];
-        for (int i = 0; i < tileMap.length; i++) {
-            for (int j = 0; j < tileMap[0].length; j++) {
-                tileMap[i][j] = (int) (Math.random() * 3);
-            }
-        }
-
+        int[][] tileMap = ChunkGenerator.generateChunk();
         try {
             dirtImage = ImageIO.read(getClass().getResource("res/dirt.jpg"));
             waterImage = ImageIO.read(getClass().getResource("res/water1.png"));
