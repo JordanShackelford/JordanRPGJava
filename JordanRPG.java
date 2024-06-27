@@ -105,30 +105,48 @@ protected void paintComponent(Graphics g) {
 
 
 
-    public void drawMap(Graphics2D g2d) {
-        int tileWidth = getWidth() / tileMap.length;
-        int tileHeight = getHeight() / tileMap[0].length;
+public void drawMap(Graphics2D g2d) {
+    int panelWidth = getWidth();
+    int panelHeight = getHeight();
+    int tileWidth = panelWidth / tileMap.length;
+    int tileHeight = panelHeight / tileMap[0].length;
 
-        for (int x_Index = 0; x_Index < tileMap.length; x_Index++) {
-            for (int y_Index = 0; y_Index < tileMap[0].length; y_Index++) {
-                int tileValue = tileMap[x_Index][y_Index];
-                int x = tileWidth * x_Index;
-                int y = tileHeight * y_Index;
+    // Adjusted dimensions to ensure full coverage
+    int extraWidth = panelWidth % tileMap.length;
+    int extraHeight = panelHeight % tileMap[0].length;
 
-                switch (tileValue) {
-                    case 0:
-                        g2d.drawImage(grassImage, x, y, tileWidth, tileHeight, null);
-                        break;
-                    case 1:
-                        g2d.drawImage(useWater1 ? waterImage : waterImage2, x, y, tileWidth, tileHeight, null);
-                        break;
-                    case 2:
-                        g2d.drawImage(dirtImage, x, y, tileWidth, tileHeight, null);
-                        break;
-                }
+    for (int x_Index = 0; x_Index < tileMap.length; x_Index++) {
+        for (int y_Index = 0; y_Index < tileMap[0].length; y_Index++) {
+            int tileValue = tileMap[x_Index][y_Index];
+            int x = tileWidth * x_Index;
+            int y = tileHeight * y_Index;
+
+            // Adjust tile width for the last column
+            int currentTileWidth = tileWidth;
+            if (x_Index == tileMap.length - 1) {
+                currentTileWidth += extraWidth;
+            }
+
+            // Adjust tile height for the last row
+            int currentTileHeight = tileHeight;
+            if (y_Index == tileMap[0].length - 1) {
+                currentTileHeight += extraHeight;
+            }
+
+            switch (tileValue) {
+                case 0:
+                    g2d.drawImage(grassImage, x, y, currentTileWidth, currentTileHeight, null);
+                    break;
+                case 1:
+                    g2d.drawImage(useWater1 ? waterImage : waterImage2, x, y, currentTileWidth, currentTileHeight, null);
+                    break;
+                case 2:
+                    g2d.drawImage(dirtImage, x, y, currentTileWidth, currentTileHeight, null);
+                    break;
             }
         }
     }
+}
 
     public static void main(String[] args) {
         JFrame frame = new JFrame("Jordan RPG");
