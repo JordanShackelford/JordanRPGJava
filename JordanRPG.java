@@ -64,21 +64,46 @@ public class JordanRPG extends JPanel implements ActionListener {
     }
 
     @Override
-    protected void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        Graphics2D g2d = (Graphics2D) g;
-        drawMap(g2d);
+protected void paintComponent(Graphics g) {
+    super.paintComponent(g);
+    Graphics2D g2d = (Graphics2D) g;
+    drawMap(g2d);
 
-        // Draw the selection box
-        int tileWidth = getWidth() / tileMap.length;
-        int tileHeight = getHeight() / tileMap[0].length;
+    // Draw the enhanced selection box
+    int tileWidth = getWidth() / tileMap.length;
+    int tileHeight = getHeight() / tileMap[0].length;
 
-        int selectedTileX = (mouseX / tileWidth) * tileWidth;
-        int selectedTileY = (mouseY / tileHeight) * tileHeight;
+    int selectedTileX = (mouseX / tileWidth) * tileWidth;
+    int selectedTileY = (mouseY / tileHeight) * tileHeight;
 
-        g2d.setColor(Color.RED);
-        g2d.drawRect(selectedTileX, selectedTileY, tileWidth, tileHeight);
-    }
+    // Radial gradient fill
+    RadialGradientPaint radialGradient = new RadialGradientPaint(
+        new Point(selectedTileX + tileWidth / 2, selectedTileY + tileHeight / 2), 
+        tileWidth / 2, 
+        new float[]{0f, 1f}, 
+        new Color[]{new Color(255, 255, 255, 100), new Color(255, 0, 0, 100)}
+    );
+    g2d.setPaint(radialGradient);
+    g2d.fillRect(selectedTileX, selectedTileY, tileWidth, tileHeight);
+
+    // Pulsating border effect
+    long currentTime = System.currentTimeMillis();
+    float pulsate = (float) (Math.sin(currentTime * 0.005) * 0.5 + 0.5);
+
+    GradientPaint gradient = new GradientPaint(
+        selectedTileX, selectedTileY, new Color(255, 255, 0, (int)(pulsate * 255)), 
+        selectedTileX + tileWidth, selectedTileY + tileHeight, new Color(255, 0, 0, (int)(pulsate * 255))
+    );
+    g2d.setPaint(gradient);
+    g2d.setStroke(new BasicStroke(5)); // Thicker border
+    g2d.drawRect(selectedTileX, selectedTileY, tileWidth, tileHeight);
+
+    // Optional shadow effect
+    g2d.setColor(new Color(0, 0, 0, 50));
+    g2d.fillRect(selectedTileX + 5, selectedTileY + 5, tileWidth, tileHeight);
+}
+
+
 
     public void drawMap(Graphics2D g2d) {
         int tileWidth = getWidth() / tileMap.length;
