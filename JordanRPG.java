@@ -68,7 +68,16 @@ public class JordanRPG extends JPanel implements ActionListener {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
         drawMap(g2d);
-        MyGraphics.drawSelectionBox(g2d, mouseX, mouseY, this, 100, 100);
+
+        // Draw the selection box
+        int tileWidth = getWidth() / tileMap.length;
+        int tileHeight = getHeight() / tileMap[0].length;
+
+        int selectedTileX = (mouseX / tileWidth) * tileWidth;
+        int selectedTileY = (mouseY / tileHeight) * tileHeight;
+
+        g2d.setColor(Color.RED);
+        g2d.drawRect(selectedTileX, selectedTileY, tileWidth, tileHeight);
     }
 
     public void drawMap(Graphics2D g2d) {
